@@ -1,3 +1,6 @@
+# TODO: the values should be populated in the correct font and size
+# TODO: infring_text should be populated in bold mode
+
 VENV_PATH="embargos_de_declaracao_env"
 
 if [ ! -d "$VENV_PATH" ]; then
@@ -30,7 +33,14 @@ for paragraph in doc.paragraphs:
     if '{{TEMPLATE_PROCESS_NUMBER}}' in paragraph.text:
         paragraph.text = paragraph.text.replace('{{TEMPLATE_PROCESS_NUMBER}}', '$process_number')
     if '{{TEMPLATE_INFRINGING_EFFECT}}' in paragraph.text:
-        paragraph.text = paragraph.text.replace('{{TEMPLATE_INFRINGING_EFFECT}}', '$infringing_text')
+        for run in paragraph.runs:
+            if '{{TEMPLATE_INFRINGING_EFFECT}}' in run.text:
+                text = run.text.split('{{TEMPLATE_INFRINGING_EFFECT}}')
+                run.text = text[0]
+                new_run = paragraph.add_run('$infringing_text')
+                new_run.bold = True
+                if len(text) > 1:
+                    paragraph.add_run(text[1])
 doc.save('output.docx')
 "
 deactivate
